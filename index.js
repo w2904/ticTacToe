@@ -1,78 +1,79 @@
+'use strict';
+
 const gameBoard = (function() {
     const originalBoard = [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"]];
     const writableBoard = structuredClone(originalBoard);
     const updateBoard = (player, oIndex, iIndex) => {
-        writableBoard[oIndex][iIndex] = player.marker;
+        writableBoard[oIndex][iIndex] = player.getPlayerMarker();
         if (checkForGameEnd()) {
-            resetBoard();
+            displayOfGameState.textContent = "Awaiting for the new game";
+            restartButton.style.display = "inline-block";
+            restartButton.addEventListener("click", resetBoard);
         }
         gameState.setActivePlayer();
-        getPlayerMove();
     }
     const getBoard = () => writableBoard;
     const resetBoard = () => {
+        const visualBoard = document.querySelectorAll(".cell");
+        visualBoard.forEach((cell) => cell.textContent = "");
+        restartButton.style.display = "none";
         for (let i = 0; i < originalBoard.length; i++){
             for (let j = 0; j < originalBoard[i].length; j++) {
                 writableBoard[i][j] = originalBoard[i][j];
             }
         }
-        gameState.resetRound();
+        gameState.setGameEnd();
         gameState.resetActivePlayer();
     }
     return {updateBoard, getBoard};
 })();
 
-function createPlayer(playerName, mark) {
+function createPlayer(playerName, mark, className) {
     const name = playerName;
     const marker = mark;
+    const playerScore = document.querySelector("" + className);
     let points = 0;
+    const getPlayerName = () => name;
+    const getPlayerMarker = () => marker;
     const addPoint = () => points++;
     const getPoints = () => points;
-    return {name, marker, addPoint, getPoints};
+    const displayPlayerScore = () => playerScore.textContent = getPoints();
+    return {getPlayerName, getPlayerMarker, addPoint, getPoints, displayPlayerScore};
 }
 
-const player1 = createPlayer("Jane", "X");
-const player2 = createPlayer("John", "O");
+const player1 = createPlayer("player1", "X", ".score.player1");
+const player2 = createPlayer("player2", "O", ".score.player2");
 
 const gameState = (function() {
-    let round = 0;
-    const resetRound = () => round = 0;
+    let gameFinished = false;
     let activePlayer = player1;
+    const getGameEnd = () => gameFinished;
+    const setGameEnd = () => gameFinished = !gameFinished;
     const getActivePlayer = () => activePlayer;
     const setActivePlayer = () => {
         activePlayer = (activePlayer === player1) ? player2 : player1;
-        if (activePlayer === player1) {
-            round++;
-        }
-    };
-    const resetActivePlayer = () => activePlayer = player1;
-    return {resetRound, getActivePlayer, setActivePlayer, resetActivePlayer};
-})();
-
-function getPlayerMove() {
-    const player = gameState.getActivePlayer();
-    const gameboard = gameBoard.getBoard();
-    while (true) {
-        const playerInput = prompt("Input a move: ");
-        if (playerInput === null) {
-            return null;
-        }
-        let indexes = [];
-        // oIndex - outer index, iIndex - inner index;
-        const moveValidity = gameboard.some((innerArray, oIndex) => innerArray.some((cellValue, iIndex) => {
-            if (cellValue === playerInput) {
-                indexes = [oIndex, iIndex];
-                return true;
-            }
-        }));
-        if (moveValidity) {
-            gameBoard.updateBoard(player, indexes[0], indexes[1]);
-            break;
+        if (gameFinished === false) {
+            displayOfGameState.textContent = "Current marker to be placed: " + activePlayer.getPlayerMarker();
         }
         else {
-            alert("This move is not legal, try again.");
+            displayOfGameState.textContent = "The game has ended!";
         }
+    };
+    const resetActivePlayer = () => {
+        activePlayer = player1;
+        displayOfGameState.textContent = "Current marker to be placed: " + activePlayer.getPlayerMarker();
     }
+    return {getGameEnd, setGameEnd, getActivePlayer, setActivePlayer, resetActivePlayer};
+})();
+
+function getPlayerMove(event) {
+    if (gameState.getGameEnd() === true) {
+        return;
+    }
+    const indexes = event.target.classList;
+    const player = gameState.getActivePlayer();
+    event.target.textContent = player.getPlayerMarker();
+    gameBoard.updateBoard(player, indexes[1], indexes[2] || indexes[1]);
 }
 
 function checkForGameEnd() {
@@ -94,19 +95,26 @@ function checkForGameEnd() {
         [[0, 2], [1, 1], [2, 0]],
     ];
     for (const pattern of conditions) {
-        if (pattern.every(([row, col]) => gameboard[row][col] === player.marker)) {
-            alert(player.name + " has won!")
+        if (pattern.every(([row, col]) => gameboard[row][col] === player.getPlayerMarker())) {
+            alert(player.getPlayerName() + " has won!");
             player.addPoint();
+            player.displayPlayerScore();
+            gameState.setGameEnd();
             return true;
         }
     }
     const isDraw = gameboard.every(row => 
-        row.every(col => col === player1.marker || col === player2.marker)
+        row.every(col => col === player1.getPlayerMarker() || col === player2.getPlayerMarker())
     );
     if (isDraw) {
         alert("Draw!");
+        gameState.setGameEnd();
         return true;
     }
 }
 
-getPlayerMove();
+const field = document.querySelector("#playing-field");
+const displayOfGameState = document.querySelector("#game-status > p");
+const restartButton = document.querySelector("#game-status > button");
+
+field.addEventListener("click", getPlayerMove);

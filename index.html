@@ -8,6 +8,39 @@
     <title>Tic-Tac-Toe</title>
 </head>
 <body>
-    
+    <div id="container">
+        <div id="score-tab">
+            <div id="player1">
+                <p class="player2">player1</p>
+                <div class="marker player1">X</div>
+                <!-- USERNAME INPUTS ARE TO BE ADDED IN THE FUTURE -->
+                <!-- <input class="username player1" name="player1-username" aria-label="player1 username" placeholder="Input your username here"> -->
+            </div>
+            <div id="score">
+                <p class="score"><span class="score player1">0</span>:<span class="score player2">0</span></p>
+            </div>
+            <div id="player2">
+                <div class="marker player2">O</div>
+                <p class="player2">player2</p>
+                <!-- USERNAME INPUTS ARE TO BE ADDED IN THE FUTURE -->
+                <!-- <input class="username player2" name="player2-username" aria-label="player2 username" placeholder="Input your username here"> -->
+            </div>
+        </div>
+        <div id="playing-field">
+            <div class="cell 0 0"></div>
+            <div class="cell 0 1"></div>
+            <div class="cell 0 2"></div>
+            <div class="cell 1 0"></div>
+            <div class="cell 1 1"></div>
+            <div class="cell 1 2"></div>
+            <div class="cell 2 0"></div>
+            <div class="cell 2 1"></div>
+            <div class="cell 2 2"></div>
+        </div>
+        <div id="game-status">
+            <button>Restart?</button>
+            <p>Current marker to be placed: X</p>
+        </div>
+    </div>
 </body>
 </html>

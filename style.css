@@ -2,9 +2,79 @@ html {
     box-sizing: border-box;
 }
 
+:root {
+    --score-tab-border: 2px solid #000;
+}
+
 *, *::before, *::after {
     box-sizing: inherit;
     font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     margin: 0;
     padding: 0;
+    font-weight: 600;
+}
+
+body {
+    height: 100vh;
+    width: 100vw;
+}
+
+#container {
+    display: grid;
+    grid-template-rows: 1fr 2fr 1fr;
+}
+
+#score-tab {
+    width: 100%;
+    height: 5rem;
+    border-top: var(--score-tab-border);
+    border-bottom: var(--score-tab-border);
+    align-self: start;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+#player1, #player2 {
+    display: flex;
+    gap: 3rem;
+}
+
+#playing-field {
+    width: 20rem;
+    height: 20rem;
+    place-self: center;
+    display: grid;
+    grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+    place-content: center;
+}
+
+.cell {
+    border: 2px solid black;
+    text-align: center;
+    font-size: 5rem;
+}
+
+#game-status {
+    margin-top: 1rem;
+    width: 80%;
+    height: 8rem;
+    justify-self: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+
+#game-status > button {
+    display: none;
+    border: 2px solid black;
+    border-radius: 5px;
+    height: min(2rem, 500px);
+    width: min(8rem, 500px);
+}
+
+#game-status > button:active {
+    transform: translateY(2px);
 }
